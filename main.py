@@ -1,9 +1,6 @@
 import tkinter as tk
 import time, math, os
 
-window = tk.Tk()
-window.title("Mandelbrot Visualization")
-
 w=1000
 h=650
 pt_radius = 4
@@ -78,7 +75,7 @@ def update_position(canvas: tk.Canvas,  pos: tuple):
         cxorig, cyorig, cxorig2, cyorig2 = canvas.coords(C_item)
         canvas.move(C_item, pos[0] - cxorig - pt_radius, pos[1] - cyorig - pt_radius)
 
-def create_background(canvas: tk.Canvas):
+def create_background(canvas: tk.Canvas, create_points=True):
     global points, A, C, C_item
     canvas.delete('all')
     xpos = coordToPixel((0, 0))[0]
@@ -90,32 +87,34 @@ def create_background(canvas: tk.Canvas):
         coord = coordToPixel((0, i - 2), inbounds=False)
         canvas.create_line(-10, coord[1], 10, coord[1], fill="gray")
     
-    points = []
-    coords = calculate_coords(A, C)
-    for i in range(0, n_points):
-        coord = coords[i] if len(coords) < i else (0, 0)
-        pixel = coordToPixel(coord)
-        points.append(canvas.create_oval(pixel[0]-pt_radius, pixel[1]-pt_radius, pixel[0]+pt_radius, pixel[1]+pt_radius, fill="#0f88e4", outline="#0f88e4"))
+    if (create_points):
+        points = []
+        coords = calculate_coords(A, C)
+        for i in range(0, n_points):
+            coord = coords[i] if len(coords) < i else (0, 0)
+            pixel = coordToPixel(coord)
+            points.append(canvas.create_oval(pixel[0]-pt_radius, pixel[1]-pt_radius, pixel[0]+pt_radius, pixel[1]+pt_radius, fill="#0f88e4", outline="#0f88e4"))
 
-    C_coords = coordToPixel(C)
-    C_item = canvas.create_oval(C_coords[0]-pt_radius, C_coords[1]-pt_radius, C_coords[0]+pt_radius, C_coords[1]+pt_radius, fill="#f21212", outline="#f21212")
+        C_coords = coordToPixel(C)
+        C_item = canvas.create_oval(C_coords[0]-pt_radius, C_coords[1]-pt_radius, C_coords[0]+pt_radius, C_coords[1]+pt_radius, fill="#f21212", outline="#f21212")
 
 
-bg = tk.PhotoImage(os.getcwd() + "/bg.png")
+if __name__ == "__main__":
 
-canvas = tk.Canvas(window, width=w, height=h)
-canvas.pack()
-create_background(canvas)
+    window = tk.Tk()
+    window.title("Mandelbrot Visualization")
 
-#canvas.create_image(0, 0, image=bg, anchor='nw')
+    canvas = tk.Canvas(window, width=w, height=h)
+    canvas.pack()
+    create_background(canvas)
 
-window.update()
-
-last_pos = (-1, -1)
-while True:
-    if (window.focus_get()):
-        pos = (window.winfo_pointerx() - window.winfo_rootx(), window.winfo_pointery() - window.winfo_rooty())
-        if (pos != last_pos):
-            update_position(canvas, pos)
-            last_pos = pos
     window.update()
+
+    last_pos = (-1, -1)
+    while True:
+        if (window.focus_get()):
+            pos = (window.winfo_pointerx() - window.winfo_rootx(), window.winfo_pointery() - window.winfo_rooty())
+            if (pos != last_pos):
+                update_position(canvas, pos)
+                last_pos = pos
+        window.update()
