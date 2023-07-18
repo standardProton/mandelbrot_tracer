@@ -1,6 +1,5 @@
 import tkinter as tk
 import time, math, os
-from PIL import Image
 
 window = tk.Tk()
 window.title("Mandelbrot Visualization")
