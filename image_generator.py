@@ -7,7 +7,7 @@ def from_rgb(rgb):
 def gray_rgb(val):
     return "#%02x%02x%02x" % ((val, val, val))
 
-def get_pixel_color(x, y, A):
+def get_pixel_color(x, y, A): #black if converges, otherwise gradient for approximately how fast it diverges
     coords = calculate_coords(A, pixelToCoord((x, y)))
     size = len(coords)
     if (size >= n_points): return (0, 0, 0)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     img = Image.new("RGB", (w, h), (255, 255, 255))
     draw = ImageDraw.Draw(img)
 
-    for y_pixel in range(0, int((h/2) if a0 else h)):
+    for y_pixel in range(0, int((h/2) if a0 else h)): #calculating for each pixel, could make lower resolution for faster speed
         for x_pixel in range(0, w):
 
             x = min(max(0, x_pixel/w), 1)

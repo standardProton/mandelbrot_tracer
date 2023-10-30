@@ -11,9 +11,9 @@ x_offset = -0.5
 x_range = 3
 y_range = (h/w)*x_range
 
-A = (0, 0)
-C = (0, 0)
-C_item = None
+A = (0, 0) #starting point for series
+C = (0, 0) #added to each iteration (Z^2 + C)
+C_item = None #point object displayed at mouse
 
 points=[]
 lowest_hidden = -1
@@ -30,8 +30,8 @@ def calculate_coords(A, C):
     prev = A
     for i in range(1, n_points):
         prev = add(multiply(prev, prev), C)
+        if (math.isnan(prev[0]) or math.isnan(prev[1]) or math.isinf(prev[0]) or math.isinf(prev[1])): return coords #diverged to infinity
         coords.append(prev)
-        if (math.isnan(prev[0]) or math.isnan(prev[1]) or math.isinf(prev[0]) or math.isinf(prev[1])): return coords
     return coords
 
 def coordToPixel(coord: tuple, inbounds=True):
@@ -43,14 +43,14 @@ def coordToPixel(coord: tuple, inbounds=True):
 def pixelToCoord(coord: tuple):
     return ((coord[0]*x_range) - (x_range/2) + x_offset, (coord[1]*y_range - (y_range/2)))
 
-def update_position(canvas: tk.Canvas,  pos: tuple):
+def update_position(canvas: tk.Canvas, pos: tuple):
     global lowest_hidden, A, C
-    x = min(max(0, pos[0]/w), 1)
+    x = min(max(0, pos[0]/w), 1) #percentages of width & height
     y = min(max(0, pos[1]/h), 1)
 
     C = pixelToCoord((x, y))
 
-    coords = calculate_coords(A, C)
+    coords = calculate_coords(A, C) #list of coords of iterations, relative to x, i axes
     
     continue_render = True
     for i in range(0, max(lowest_hidden, n_points)):
@@ -80,8 +80,8 @@ def create_background(canvas: tk.Canvas, create_points=True):
     canvas.delete('all')
     xpos = coordToPixel((0, 0))[0]
 
-    canvas.create_line(xpos, 0, xpos, h, fill="gray")
-    canvas.create_line(0, h*0.5, w, h*0.5, fill="gray")
+    canvas.create_line(xpos, 0, xpos, h, fill="gray") #vertical axis
+    canvas.create_line(0, h*0.5, w, h*0.5, fill="gray") #horizontal axis
 
     for i in range(0, 4): #i markings
         coord = coordToPixel((0, i - 2), inbounds=False)
@@ -89,7 +89,7 @@ def create_background(canvas: tk.Canvas, create_points=True):
     
     if (create_points):
         points = []
-        coords = calculate_coords(A, C)
+        coords = calculate_coords(A, C) #initial coordinates
         for i in range(0, n_points):
             coord = coords[i] if len(coords) < i else (0, 0)
             pixel = coordToPixel(coord)
@@ -115,6 +115,6 @@ if __name__ == "__main__":
         if (window.focus_get()):
             pos = (window.winfo_pointerx() - window.winfo_rootx(), window.winfo_pointery() - window.winfo_rooty())
             if (pos != last_pos):
-                update_position(canvas, pos)
+                update_position(canvas, pos) #set to mouse position
                 last_pos = pos
         window.update()
