@@ -23,11 +23,7 @@ def calc_pixels(A=None):
     warnings.filterwarnings('ignore') #expected overflow warnings, if point diverges in sequence
     X, Y = np.meshgrid(x_vals, y_vals)
     grid = np.array([X.flatten(), Y.flatten()]).transpose()
-    calcs = calculate_coord_vec(grid)
-    #if A is None: 
-    #    calcs = calculate_coord_vec(grid)
-     #   print("A")
-    #else: calcs = calculate_coord_vec_A(grid, A)
+    calcs = calculate_coord_vec(grid) if A is None else calculate_coord_vec_A(A, grid)
     warnings.filterwarnings('default')
 
     calcs[calcs >= n_points] = 0 #black pixel for converge
@@ -52,7 +48,7 @@ if __name__ == "__main__":
     img = Image.new("RGB", (w, h), (255, 255, 255))
     draw = ImageDraw.Draw(img)'''
     
-    pixels = calc_pixels()
+    pixels = calc_pixels() #calc_pixels(A=np.array([a_real, a_cmpx]))
     mandelbrot = Image.fromarray(pixels)
     mandelbrot.save("./mandelbrot_output.jpg")
 
