@@ -1,13 +1,14 @@
 import tkinter as tk
 import time, math, os
+import numpy as np
 
 w=1000
-h=650
+h=800
 pt_radius = 4
 pt_diameter = 2*pt_radius
 n_points = 50
 
-x_offset = -0.5
+x_offset = -0.7
 x_range = 3
 y_range = (h/w)*x_range
 
@@ -24,6 +25,28 @@ def add(ex0:tuple, ex1: tuple):
 def multiply(ex0:tuple, ex1:tuple): #complex plane
     a, b = ex0; c, d = ex1
     return ((a*c) - (d*b), (a*d) + (b*c))
+
+def multiply_vec(ex0, ex1): #shape = [N,2]
+    r = np.zeros((len(ex0), 2))
+    r[:,0] = (ex0[:,0] * ex1[:,0]) - (ex0[:,1] * ex1[:,1])
+    r[:,1] = (ex0[:,0]*ex1[:,1]) + (ex0[:,1]*ex1[:,0])
+    return r
+
+def calculate_coord_vec(C): #returns vec of n before reached inf or nan
+    curr = C
+    r = np.zeros(len(C))
+    for i in range(n_points):
+        r += np.max(np.isnan(curr), axis=1)
+        curr = multiply_vec(curr, curr) + C
+    return (n_points*np.ones(len(C))) - r
+
+def calculate_coord_vec_A(a, C): #variant with non-zero starting point
+    curr = np.tile(a, len(C)).reshape(len(C), 2)
+    r = np.zeros(len(C))
+    for i in range(n_points):
+        r += np.max(np.isnan(curr), axis=1)
+        curr = multiply_vec(curr, curr) + C
+    return (n_points*np.ones(len(C))) - r
 
 def calculate_coords(A, C):
     coords = [A]
