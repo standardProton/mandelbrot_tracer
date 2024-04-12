@@ -7,20 +7,6 @@ h=4000
 n_points=100
 brightness_percent = 0.7
 
-def from_rgb(rgb):
-    return "#%02x%02x%02x" % rgb
-def gray_rgb(val):
-    return "#%02x%02x%02x" % ((val, val, val))
-
-def get_pixel_color(x, y, A): #black if converges, otherwise gradient for approximately how fast it diverges
-    coords = calculate_coords(A, pixelToCoord((x, y)))
-    size = len(coords)
-    if (size >= n_points): return (0, 0, 0)
-    elif (size >= 3): 
-        val = int(255*(size/(n_points-3)))
-        return (val, val, val)
-    else: return (0, 0, 255)
-
 def calc_pixels(A=None):
     
     x_vals = np.arange(-x_range/2, x_range/2, x_range/w) + x_offset
