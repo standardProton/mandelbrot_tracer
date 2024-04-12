@@ -32,7 +32,7 @@ def multiply_vec(ex0, ex1): #shape = [N,2]
     r[:,1] = (ex0[:,0]*ex1[:,1]) + (ex0[:,1]*ex1[:,0])
     return r
 
-def calculate_coord_vec(C): #returns vec of n before reached inf or nan
+def calculate_coord_vec(C, n_points): #returns vec of n before reached inf or nan
     curr = C
     r = np.zeros(len(C))
     for i in range(n_points):
@@ -40,7 +40,7 @@ def calculate_coord_vec(C): #returns vec of n before reached inf or nan
         curr = multiply_vec(curr, curr) + C
     return (n_points*np.ones(len(C))) - r
 
-def calculate_coord_vec_A(a, C): #variant with non-zero starting point
+def calculate_coord_vec_A(a, C, n_points): #variant with non-zero starting point
     curr = np.tile(a, len(C)).reshape(len(C), 2)
     r = np.zeros(len(C))
     for i in range(n_points):

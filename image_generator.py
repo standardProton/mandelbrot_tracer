@@ -2,6 +2,11 @@ from main import *
 from PIL import Image, ImageDraw
 import warnings
 
+w=5000
+h=4000
+n_points=100
+brightness_percent = 0.7
+
 def from_rgb(rgb):
     return "#%02x%02x%02x" % rgb
 def gray_rgb(val):
@@ -23,11 +28,14 @@ def calc_pixels(A=None):
     warnings.filterwarnings('ignore') #expected overflow warnings, if point diverges in sequence
     X, Y = np.meshgrid(x_vals, y_vals)
     grid = np.array([X.flatten(), Y.flatten()]).transpose()
-    calcs = calculate_coord_vec(grid) if A is None else calculate_coord_vec_A(A, grid)
+    calcs = calculate_coord_vec(grid, n_points) if A is None else calculate_coord_vec_A(A, grid, n_points)
     warnings.filterwarnings('default')
 
     calcs[calcs >= n_points] = 0 #black pixel for converge
-    calcs = np.uint8(255*calcs/np.max(calcs)).reshape(len(y_vals), len(x_vals))
+    m = 255/(np.max(calcs)*brightness_percent) #brightness
+    calcs *= m
+    calcs[calcs > 255] = 255
+    calcs = np.uint8(calcs).reshape(len(y_vals), len(x_vals))
     return calcs
 
 
